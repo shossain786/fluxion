@@ -27,9 +27,8 @@
     </dependency>
     <dependency>
       <groupId>io.cucumber</groupId>
-      <artifactId>cucumber-junit</artifactId>
+      <artifactId>cucumber-testng</artifactId>
       <version>7.20.1</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>

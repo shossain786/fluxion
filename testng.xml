@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="Cucumber Suite" parallel="tests" thread-count="4">
+    <test name="Cucumber Tests">
+        <classes>
+            <class name="com.fluxion.core.ParallelRunner" />
+        </classes>
+    </test>
+</suite>
