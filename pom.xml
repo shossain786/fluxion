@@ -4,7 +4,7 @@
 
   <groupId>com.fluxion</groupId>
   <artifactId>fluxion</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.5</version>
   <packaging>jar</packaging>
 
   <name>fluxion</name>
