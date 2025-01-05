@@ -4,15 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6058499-2ed9-4047-b60b-9babd12b60d4" name="Changes" comment="Reporting features updated.">
+    <list default="true" id="c6058499-2ed9-4047-b60b-9babd12b60d4" name="Changes" comment="Reporting features updated and rule changed">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ChartGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/HtmlReportBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportWriter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/AbstractReportGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/AbstractReportGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CucumberJsonParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CucumberJsonParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CustomReportGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CustomReportGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/HtmlReportGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/HtmlReportGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ConfigUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ConfigUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ReportManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ScreenshotUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ScreenshotUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Scenario.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Scenario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Step.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Step.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/steps/CommonSteps.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/steps/CommonSteps.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,12 +69,13 @@
     "Maven.fluxion [clean].executor": "Run",
     "Maven.fluxion [install].executor": "Run",
     "Maven.fluxion [validate].executor": "Run",
+    "Maven.fluxion [verify].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "report__feature__update",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/myresearches/fluxion",
-    "settings.editor.selected.configurable": "advanced.settings"
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -113,12 +119,21 @@
       <option name="project" value="LOCAL" />
       <updated>1736052097211</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Reporting features updated and rule changed">
+      <option name="closed" value="true" />
+      <created>1736078507783</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1736078507783</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="code updated" />
     <MESSAGE value="Reporting features updated." />
-    <option name="LAST_COMMIT_MESSAGE" value="Reporting features updated." />
+    <MESSAGE value="Reporting features updated and rule changed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Reporting features updated and rule changed" />
   </component>
 </project>
