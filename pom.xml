@@ -4,15 +4,17 @@
 
   <groupId>com.fluxion</groupId>
   <artifactId>fluxion</artifactId>
-  <version>1.0.7v2</version>
+  <version>1.0.7v4</version>
   <packaging>jar</packaging>
-
-  <name>fluxion</name>
-  <url>http://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
   </properties>
+
+  <name>fluxion</name>
+  <url>http://maven.apache.org</url>
 
   <dependencies>
     <dependency>
