@@ -5,19 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6058499-2ed9-4047-b60b-9babd12b60d4" name="Changes" comment="Reporting features updated and rule changed">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ChartGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/HtmlReportBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportWriter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CucumberJsonParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CucumberJsonParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CustomReportGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CustomReportGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/HtmlReportGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/HtmlReportGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Scenario.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Scenario.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Step.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Step.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/steps/CommonSteps.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/steps/CommonSteps.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportWriter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,7 +118,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736078507783</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Reporting features updated and rule changed">
+      <option name="closed" value="true" />
+      <created>1736095749081</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1736095749081</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

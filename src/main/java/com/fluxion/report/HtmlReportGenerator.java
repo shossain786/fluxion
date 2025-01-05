@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +31,13 @@ public class HtmlReportGenerator {
         this.writer = new ReportWriter();
     }
 
-
     public void generateReportFromCucumberJson(String cucumberJsonFilePath) {
         try {
             logger.info("Generating report from Cucumber JSON: {}", cucumberJsonFilePath);
             List<Map<String, Object>> features = parseCucumberJson(cucumberJsonFilePath);
             List<Map<String, String>> scenarios = extractScenarioDetails(features);
             String outputFilePath = config.getHtmlReport().getOutputFilePath();
-            generateReport(scenarios, outputFilePath);
+            generateReport(scenarios);
         } catch (IOException e) {
             logger.error("Failed to generate report from Cucumber JSON file: {}", cucumberJsonFilePath, e);
             throw new RuntimeException("Failed to generate report", e);
@@ -51,12 +52,20 @@ public class HtmlReportGenerator {
         return features;
     }
 
-    public void generateReport(List<Map<String, String>> scenarios, String outputFilePath) {
-        logger.info("Generating HTML report for {} scenarios", scenarios.size());
+    public void generateReport(List<Map<String, String>> scenarios) {
+        // Get the output directory from config
+        String outputDirectory = config.getHtmlReport().getOutputFilePath();
+
+        // Generate the report file name with a timestamp
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String outputFilePath = outputDirectory + "test_report_" + timestamp + ".html";
+
+        // Generate the chart data and HTML content
         String chartData = chartGenerator.generateChartData(scenarios);
         String htmlContent = builder.buildHtml(scenarios, chartData);
-        writer.writeReport(outputFilePath, htmlContent);
-        logger.info("Report generated successfully at: {}", outputFilePath);
+
+        // Write the HTML content to the report
+        writer.writeReport(outputFilePath, htmlContent);  // This will now handle directory creation
     }
 
     private List<Map<String, String>> extractScenarioDetails(List<Map<String, Object>> features) {
