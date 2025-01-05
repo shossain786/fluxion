@@ -1,10 +1,9 @@
 package com.fluxion.core;
 
-import org.yaml.snakeyaml.Yaml;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
 import java.util.Map;
 
 public class ConfigManager {
@@ -16,17 +15,34 @@ public class ConfigManager {
 
     private static void loadConfig() {
         try {
-            // Search for the config.yml file in the user's project repository
-            String configPath = "src/test/resources/config/config.yml";
-            InputStream inputStream = Files.newInputStream(Paths.get(configPath));
-            Yaml yaml = new Yaml();
-            config = yaml.load(inputStream);
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            File configFile = new File("src/test/resources/config/config.yml");
+            config = mapper.readValue(configFile, Map.class);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load configuration from " + "src/test/resources/config/config.yml", e);
+            System.err.println("Failed to load configuration file: src/test/resources/config/config.yml");
+            e.printStackTrace();
+            // Use default values if file loading fails
+            config = Map.of(
+                    "screenshot.dir", "target/screenshots",
+                    "htmlReport.path", "target/custom-reports/execution-report.html",
+                    "browser", "chrome",
+                    "baseUrl", "https://google.com",
+                    "timeout", 30
+            );
         }
     }
 
     public static String getConfig(String key) {
-        return config.getOrDefault(key, "").toString();
+        Object value = config.get(key);
+        return value != null ? value.toString() : null;
+    }
+
+    public static String getNestedConfig(String parentKey, String childKey) {
+        Object parent = config.get(parentKey);
+        if (parent instanceof Map) {
+            Object childValue = ((Map<?, ?>) parent).get(childKey);
+            return childValue != null ? childValue.toString() : null;
+        }
+        return null;
     }
 }

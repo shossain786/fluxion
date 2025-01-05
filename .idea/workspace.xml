@@ -5,15 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6058499-2ed9-4047-b60b-9babd12b60d4" name="Changes" comment="code updated">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Scenario.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/Step.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ScreenshotUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/AbstractReportGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CucumberJsonParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/CustomReportGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/HtmlReportGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/report/ReportGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ConfigUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/core/ConfigManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/core/ConfigManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/steps/CommonSteps.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/steps/CommonSteps.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/YamlReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/YamlReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ScreenshotUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/fluxion/utils/ScreenshotUtil.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +24,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -63,7 +65,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/myresearches/fluxion&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
   }
 }</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -91,7 +93,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735746935203</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="code updated">
+      <option name="closed" value="true" />
+      <created>1735754789700</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1735754789700</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
