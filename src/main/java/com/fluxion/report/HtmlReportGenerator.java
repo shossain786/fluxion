@@ -1,120 +1,98 @@
 package com.fluxion.report;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fluxion.utils.ConfigUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-public class HtmlReportGenerator extends AbstractReportGenerator {
+public class HtmlReportGenerator {
+    // Create a logger instance for this class
+    private static final Logger logger = LoggerFactory.getLogger(HtmlReportGenerator.class);
 
-    private static final String DEFAULT_REPORT_PATH = "target/custom-reports/execution-report.html";
-    private final String reportPath;
+    private final ReportConfig config;
+    private final ChartGenerator chartGenerator;
+    private final HtmlReportBuilder builder;
+    private final ReportWriter writer;
 
-    /**
-     * Constructor for HtmlReportGenerator.
-     *
-     * @param jsonFilePath Path to the Cucumber JSON report.
-     */
-    public HtmlReportGenerator(String jsonFilePath) {
-        super(jsonFilePath);
-        // Fetch the report path from configuration; fallback to the default path if not provided.
-        this.reportPath = ConfigUtil.getProperty("html.report.path", DEFAULT_REPORT_PATH);
+    public HtmlReportGenerator() {
+        // Hard-coded path to the config file
+        String configFilePath = "src/test/resources/config/config.yml";  // Replace with your actual path
+
+        this.config = new ReportConfig(configFilePath); // Load from YAML
+        this.chartGenerator = new ChartGenerator();
+        this.builder = new HtmlReportBuilder(config.getHtmlReport().getSuiteName(), config.getHtmlReport().getSuiteName());
+        this.writer = new ReportWriter();
     }
 
-    /**
-     * Generates the HTML report based on the parsed JSON data.
-     *
-     * @param outputFilePath Not used in this implementation but kept for interface compatibility.
-     */
-    @Override
-    public void generateReport(String outputFilePath) {
+    public void generateReportFromCucumberJson(String cucumberJsonFilePath) {
         try {
-            // Ensure the report directory exists
-            Path outputDir = Path.of(reportPath).getParent();
-            if (outputDir != null && !Files.exists(outputDir)) {
-                Files.createDirectories(outputDir);
-            }
-
-            // Generate the HTML report
-            try (FileWriter writer = new FileWriter(reportPath)) {
-                writer.write(generateHtmlContent());
-            }
-
-            System.out.println("HTML report generated successfully at: " + reportPath);
-
+            logger.info("Generating report from Cucumber JSON: {}", cucumberJsonFilePath);
+            List<Map<String, Object>> features = parseCucumberJson(cucumberJsonFilePath);
+            List<Map<String, String>> scenarios = extractScenarioDetails(features);
+            String outputFilePath = config.getHtmlReport().getOutputFilePath();
+            generateReport(scenarios);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to generate HTML report", e);
+            logger.error("Failed to generate report from Cucumber JSON file: {}", cucumberJsonFilePath, e);
+            throw new RuntimeException("Failed to generate report", e);
         }
     }
 
-    /**
-     * Generates the HTML content for the report.
-     *
-     * @return HTML content as a String.
-     */
-    private String generateHtmlContent() {
-        StringBuilder htmlBuilder = new StringBuilder();
-        htmlBuilder.append("<html><head><title>Execution Report</title></head><body>");
-        htmlBuilder.append("<h1>Test Execution Report</h1>");
-        htmlBuilder.append("<table border='1'>");
-        htmlBuilder.append("<tr><th>Feature</th><th>Scenario</th><th>Status</th><th>Duration</th></tr>");
-
-        try {
-            JsonNode reportData = getReportData();
-            for (JsonNode feature : reportData) {
-                String featureName = feature.get("name").asText();
-                for (JsonNode element : feature.get("elements")) {
-                    String scenarioName = element.get("name").asText();
-                    String status = extractScenarioStatus(element);
-                    long duration = extractScenarioDuration(element);
-
-                    htmlBuilder.append("<tr>");
-                    htmlBuilder.append("<td>").append(featureName).append("</td>");
-                    htmlBuilder.append("<td>").append(scenarioName).append("</td>");
-                    htmlBuilder.append("<td>").append(status).append("</td>");
-                    htmlBuilder.append("<td>").append(formatDuration(duration)).append("</td>");
-                    htmlBuilder.append("</tr>");
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error while parsing JSON report data: " + e.getMessage(), e);
-        }
-
-        htmlBuilder.append("</table>");
-        htmlBuilder.append("</body></html>");
-        return htmlBuilder.toString();
+    private List<Map<String, Object>> parseCucumberJson(String cucumberJsonFilePath) throws IOException {
+        logger.debug("Parsing Cucumber JSON file: {}", cucumberJsonFilePath);
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map<String, Object>> features = mapper.readValue(new File(cucumberJsonFilePath), new TypeReference<List<Map<String, Object>>>() {});
+        logger.debug("Successfully parsed Cucumber JSON file: {}", cucumberJsonFilePath);
+        return features;
     }
 
-    /**
-     * Extracts the status of the scenario from the JSON node.
-     *
-     * @param scenarioNode The JSON node representing the scenario.
-     * @return The status of the scenario (e.g., "passed", "failed").
-     */
-    private String extractScenarioStatus(JsonNode scenarioNode) {
-        JsonNode steps = scenarioNode.get("steps");
-        if (steps != null && steps.size() > 0) {
-            JsonNode lastStep = steps.get(steps.size() - 1);
-            return lastStep.get("result").get("status").asText();
-        }
-        return "unknown";
+    public void generateReport(List<Map<String, String>> scenarios) {
+        // Get the output directory from config
+        String outputDirectory = config.getHtmlReport().getOutputFilePath();
+
+        // Generate the report file name with a timestamp
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String outputFilePath = outputDirectory + "test_report_" + timestamp + ".html";
+
+        // Generate the chart data and HTML content
+        String chartData = chartGenerator.generateChartData(scenarios);
+        String htmlContent = builder.buildHtml(scenarios, chartData);
+
+        // Write the HTML content to the report
+        writer.writeReport(outputFilePath, htmlContent);  // This will now handle directory creation
     }
 
-    /**
-     * Extracts the duration of the scenario from the JSON node.
-     *
-     * @param scenarioNode The JSON node representing the scenario.
-     * @return The duration of the scenario in nanoseconds.
-     */
-    private long extractScenarioDuration(JsonNode scenarioNode) {
-        JsonNode steps = scenarioNode.get("steps");
-        if (steps != null && steps.size() > 0) {
-            JsonNode lastStep = steps.get(steps.size() - 1);
-            return lastStep.get("result").get("duration").asLong();
+    private List<Map<String, String>> extractScenarioDetails(List<Map<String, Object>> features) {
+        logger.debug("Extracting scenario details from features");
+        return features.stream()
+                .flatMap(feature -> {
+                    List<Map<String, Object>> elements = (List<Map<String, Object>>) feature.get("elements");
+                    return elements.stream().map(element -> {
+                        String name = (String) element.get("name");
+                        List<Map<String, Object>> steps = (List<Map<String, Object>>) element.get("steps");
+                        String status = determineScenarioStatus(steps);
+                        return Map.of("name", name, "status", status);
+                    });
+                })
+                .toList();
+    }
+
+    private String determineScenarioStatus(List<Map<String, Object>> steps) {
+        logger.debug("Determining scenario status");
+        if (steps == null || steps.isEmpty()) {
+            return "unknown";
         }
-        return 0;
+        return steps.stream()
+                .map(step -> {
+                    Map<String, Object> result = (Map<String, Object>) step.get("result");
+                    return result != null ? (String) result.get("status") : "unknown";
+                })
+                .anyMatch(status -> !"passed".equals(status)) ? "failed" : "passed";
     }
 }
