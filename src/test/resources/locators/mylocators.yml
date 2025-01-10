@@ -1,0 +1,12 @@
+locators:
+  loginPage:
+    usernameField: "#username"
+    passwordField: "#password"
+    loginButton: "#login"
+  dropdown:
+    dropdownField: "#dropdown"
+  checkbox:
+    checkboxField: "#checkbox"
+  dragAndDrop:
+    sourceField: "#source"
+    targetField: "#target"
