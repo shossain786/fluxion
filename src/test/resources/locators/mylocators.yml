@@ -1,12 +1,8 @@
 locators:
-  loginPage:
-    usernameField: "#username"
-    passwordField: "#password"
-    loginButton: "#login"
-  dropdown:
-    dropdownField: "#dropdown"
-  checkbox:
-    checkboxField: "#checkbox"
-  dragAndDrop:
-    sourceField: "#source"
-    targetField: "#target"
+  loginpage:
+    username: "#username"
+    password: "#password"
+    login: "#login"
+  homepage:
+    inputform: "xpath__//b[.='Input Form']"
+    fullname: "css__[id=uname]"

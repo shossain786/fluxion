@@ -1,7 +1,6 @@
 package com.fluxion.actions;
 
 import com.fluxion.utils.LocatorLoader;
-import com.fluxion.utils.YamlLoader;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,19 +13,20 @@ import java.util.Map;
 
 /**
  * SeleniumActions provides reusable methods for common Selenium operations.
+ * Ensures thread safety for WebDriver and Actions instances.
  */
 public class SeleniumActions {
     private static final Logger logger = LoggerFactory.getLogger(SeleniumActions.class);
-    private final WebDriver driver;
-    private final Actions actions;
+    private static final ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();
+    private static final ThreadLocal<Actions> threadActions = ThreadLocal.withInitial(() -> new Actions(threadDriver.get()));
+
     /**
      * Constructor to initialize SeleniumActions with the WebDriver instance.
      *
      * @param driver WebDriver instance.
      */
     public SeleniumActions(WebDriver driver) {
-        this.driver = driver;
-        this.actions = new Actions(driver);
+        threadDriver.set(driver);
     }
 
     /**
@@ -37,7 +37,7 @@ public class SeleniumActions {
     public void navigateTo(String url) {
         try {
             logger.info("Navigating to URL: {}", url);
-            driver.get(url);
+            getDriver().get(url);
         } catch (Exception e) {
             logger.error("Failed to navigate to URL: {}", url, e);
             throw new RuntimeException(e);
@@ -52,16 +52,16 @@ public class SeleniumActions {
      */
     private WebElement findElement(String locatorName) {
         try {
-            Map<String, String> locatorData = LocatorLoader.getLocator(locatorName);
-            String locatorType = locatorData.get("type");
-            String locatorValue = locatorData.get("value");
+            String locatorData = LocatorLoader.getLocator("",locatorName);
+            String locatorType = locatorData.split("__")[0];
+            String locatorValue = locatorData.split("__")[1];
 
             return switch (locatorType.toLowerCase()) {
-                case "id" -> driver.findElement(By.id(locatorValue));
-                case "xpath" -> driver.findElement(By.xpath(locatorValue));
-                case "css" -> driver.findElement(By.cssSelector(locatorValue));
-                case "name" -> driver.findElement(By.name(locatorValue));
-                case "linktext" -> driver.findElement(By.linkText(locatorValue));
+                case "id" -> getDriver().findElement(By.id(locatorValue));
+                case "xpath" -> getDriver().findElement(By.xpath(locatorValue));
+                case "css" -> getDriver().findElement(By.cssSelector(locatorValue));
+                case "name" -> getDriver().findElement(By.name(locatorValue));
+                case "linktext" -> getDriver().findElement(By.linkText(locatorValue));
                 default -> throw new RuntimeException("Unsupported locator type: " + locatorType);
             };
         } catch (Exception e) {
@@ -92,13 +92,13 @@ public class SeleniumActions {
      *
      * @param locatorName Name of the locator in the YAML file.
      */
-    public void checkOrUncheck(String locatorName) {
+    public void click(String locatorName) {
         try {
-            logger.info("Click to perform on field: {}", locatorName);
+            logger.info("Clicking on field: {}", locatorName);
             WebElement element = findElement(locatorName);
             element.click();
         } catch (Exception e) {
-            logger.error("Failed to click on field: {}. \nexception: {}", locatorName, e.getMessage());
+            logger.error("Failed to click on field: {}", locatorName, e);
             throw new RuntimeException(e);
         }
     }
@@ -106,92 +106,48 @@ public class SeleniumActions {
     /**
      * Select a value from a dropdown.
      *
-     * @param section   the YAML section
      * @param fieldName the dropdown field name
      * @param value     the value to select
      */
-    public void selectFromDropdown(String section, String fieldName, String value) {
+    public void selectFromDropdown(String fieldName, String value) {
         try {
-            logger.info("Selecting value: '{}' from dropdown: {} in section: {}", value, fieldName, section);
-            WebElement dropdown = findElement(section, fieldName);
-            Select select = new Select(dropdown); // Added Select to handle dropdowns properly
-            select.selectByVisibleText(value); // Selecting value by visible text
-            logger.debug("Value: '{}' successfully selected from dropdown: {} in section: {}", value, fieldName, section);
+            logger.info("Selecting value: '{}' from dropdown: {}", value, fieldName);
+            WebElement dropdown = findElement(fieldName);
+            Select select = new Select(dropdown);
+            select.selectByVisibleText(value);
         } catch (Exception e) {
-            logger.error("Failed to select value: '{}' from dropdown: {} in section: {}", value, fieldName, section, e);
+            logger.error("Failed to select value: '{}' from dropdown: {}", value, fieldName, e);
             throw new RuntimeException("Error selecting value from dropdown", e);
         }
     }
 
     /**
-     * Hover over an element and verify its text.
+     * Get the thread-safe WebDriver instance.
      *
-     * @param section       the YAML section
-     * @param fieldName     the field name
-     * @param expectedText  the expected text
+     * @return WebDriver instance.
      */
-    public void hoverAndVerifyText(String section, String fieldName, String expectedText) {
-        try {
-            logger.info("Hovering over field: {} in section: {} and verifying text: {}", fieldName, section, expectedText);
-            WebElement element = findElement(section, fieldName);
-            actions.moveToElement(element).perform();
-            String actualText = element.getText().trim(); // Trimming whitespace for comparison
-            if (!actualText.equals(expectedText)) {
-                logger.warn("Text mismatch! Expected: '{}', Found: '{}'", expectedText, actualText);
-                throw new AssertionError("Text mismatch! Expected: '" + expectedText + "', Found: '" + actualText + "'");
-            }
-            logger.debug("Hover and text verification successful for field: {} in section: {}", fieldName, section);
-        } catch (Exception e) {
-            logger.error("Failed to hover and verify text on field: {} in section: {}", fieldName, section, e);
-            throw new RuntimeException("Error during hover and text verification", e);
+    private WebDriver getDriver() {
+        WebDriver driver = threadDriver.get();
+        if (driver == null) {
+            throw new IllegalStateException("WebDriver is not initialized for the current thread.");
         }
+        return driver;
     }
 
     /**
-     * Drag and drop an element from one field to another.
+     * Get the thread-safe Actions instance.
      *
-     * @param sourceSection the YAML section for the source
-     * @param sourceField   the source field
-     * @param targetSection the YAML section for the target
-     * @param targetField   the target field
+     * @return Actions instance.
      */
-    public void dragAndDrop(String sourceSection, String sourceField, String targetSection, String targetField) {
-        try {
-            logger.info("Dragging field: {} in section: {} to field: {} in section: {}", sourceField, sourceSection, targetField, targetSection);
-            WebElement source = findElement(sourceSection, sourceField);
-            WebElement target = findElement(targetSection, targetField);
-            actions.dragAndDrop(source, target).perform();
-            logger.debug("Drag and drop successful from field: {} in section: {} to field: {} in section: {}", sourceField, sourceSection, targetField, targetSection);
-        } catch (Exception e) {
-            logger.error("Failed to drag field: {} in section: {} to field: {} in section: {}", sourceField, sourceSection, targetField, targetSection, e);
-            throw new RuntimeException("Error during drag and drop operation", e);
-        }
+    private Actions getActions() {
+        return threadActions.get();
     }
 
     /**
-     * Find an element by its locator from YAML.
-     *
-     * @param section   the YAML section
-     * @param fieldName the field name
-     * @return the WebElement
+     * Clean up the WebDriver and Actions instances for the current thread.
      */
-    private WebElement findElement(String section, String fieldName) {
-        try {
-            logger.debug("Fetching locator for field: {} in section: {}", fieldName, section);
-            String locator = YamlLoader.getLocator(section, fieldName);
-
-            // Adjust locator type as per your project's default, e.g., CSS Selector.
-            By by = By.cssSelector(locator);
-
-            WebElement element = driver.findElement(by);
-            logger.debug("Element located for field: {} in section: {}", fieldName, section);
-            return element;
-        } catch (Exception e) {
-            logger.error("Failed to find element for field: {} in section: {}", fieldName, section, e);
-            throw new RuntimeException("Error finding element", e);
-        }
+    public static void cleanup() {
+        threadDriver.remove();
+        threadActions.remove();
     }
-
-
-
 }
