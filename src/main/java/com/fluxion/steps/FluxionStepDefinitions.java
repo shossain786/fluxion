@@ -1,17 +1,15 @@
 package com.fluxion.steps;
 
+import com.fluxion.actions.SeleniumActions;
 import com.fluxion.core.ConfigManager;
 import com.fluxion.core.DriverManager;
-import com.fluxion.utils.LocatorLoader;
 import com.fluxion.utils.ScreenshotUtil;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +25,7 @@ public class FluxionStepDefinitions {
     private static final ThreadLocal<WebDriver> threadLocalDriver = new ThreadLocal<>();
     private static final ThreadLocal<Scenario> threadLocalScenario = new ThreadLocal<>();
     private static final ThreadLocal<String> currentPageName = ThreadLocal.withInitial(() -> null);
-
+    SeleniumActions seleniumActions = new SeleniumActions();
     /**
      * Retrieves the WebDriver instance for the current thread.
      *
@@ -70,19 +68,17 @@ public class FluxionStepDefinitions {
         logger.debug("I am on the: {}", pageName);
     }
 
-    /**
-     * Step to open the login page.
-     */
-    @Given("I open the login page")
-    public void iOpenTheLoginPage() {
+    @Given("I navigate to url {string}")
+    public void iNavigateToUrl(String urlKey) {
         try {
-            String baseUrl = ConfigManager.getConfig("baseUrl");
-            getDriver().get(baseUrl);
-            String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), "OpenLoginPage");
-            getScenario().log("Login page opened. Screenshot: " + screenshotPath);
+            String url = ConfigManager.getConfig(urlKey);
+            assert  url != null;
+            getDriver().get(url);
+            String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), urlKey);
+            getScenario().log("Application page opened. Screenshot: " + screenshotPath);
         } catch (Exception e) {
             String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), "OpenLoginPage_Error");
-            getScenario().log("Error in opening login page. Screenshot: " + screenshotPath);
+            getScenario().log("Error in opening application page. Screenshot: " + screenshotPath);
             throw new RuntimeException("Error in opening login page", e);
         }
     }
@@ -100,9 +96,7 @@ public class FluxionStepDefinitions {
         }
 
         try {
-            String locator = LocatorLoader.getLocator(pageName, fieldName);
-            WebElement element = getDriver().findElement(By.cssSelector(locator));
-            element.click();
+            seleniumActions.click(fieldName);
             logger.debug("Clicked on: {} on page: {}", fieldName, pageName);
         } catch (Exception e) {
             String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), "ClickError_" + fieldName);
@@ -119,20 +113,12 @@ public class FluxionStepDefinitions {
      */
     @And("I enter {string} in {string}")
     public void iEnterIn(String data, String fieldName) {
-        String pageName = currentPageName.get();
-        if (pageName == null) {
-            throw new RuntimeException("Current page name is not set. Use 'I am on the \"<pageName>\"' step first.");
-        }
-
         try {
-            String locator = LocatorLoader.getLocator(pageName, fieldName);
-            WebElement element = getDriver().findElement(By.cssSelector(locator));
-            element.clear();
-            element.sendKeys(data);
-            logger.debug("Entered '{}' in field: '{}' on page: {}", data, fieldName, pageName);
+            seleniumActions.enterText(fieldName, data);
+            logger.debug("Entered '{}' in field: '{}'", data, fieldName);
         } catch (Exception e) {
             String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), "EnterDataError_" + fieldName);
-            logger.error("Error entering data in field: {} on page: {}. Screenshot: {}", fieldName, pageName, screenshotPath);
+            logger.error("Error entering data in field: {}. Screenshot: {}", fieldName, screenshotPath);
             throw new RuntimeException("Failed to enter data in field: " + fieldName, e);
         }
     }
@@ -182,4 +168,5 @@ public class FluxionStepDefinitions {
             throw new RuntimeException("Error in closing the browser", e);
         }
     }
+
 }

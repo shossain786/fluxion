@@ -1,8 +1,7 @@
-locators:
-  loginpage:
-    username: "#username"
-    password: "#password"
-    login: "#login"
-  homepage:
-    inputform: "xpath__//b[.='Input Form']"
-    fullname: "css__[id=uname]"
+loginpage:
+  username: "css__#username"
+  password: "css__#password"
+  login: "css__#submit"
+homepage:
+  inputform: "xpath__//b[.='Input Form']"
+  fullname: "css__[id=uname]"

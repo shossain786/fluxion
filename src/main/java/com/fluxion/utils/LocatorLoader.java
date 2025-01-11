@@ -101,6 +101,7 @@ public class LocatorLoader {
      */
     public static String getLocator(String locatorGroup, String fieldName) {
         synchronized (locators) {
+            fieldName = fieldName.replace(" ", "").toLowerCase();
             if (!locators.containsKey(locatorGroup)) {
                 throw new RuntimeException("Locator group not found: " + locatorGroup);
             }
