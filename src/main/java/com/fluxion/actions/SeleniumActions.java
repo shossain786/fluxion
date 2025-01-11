@@ -1,6 +1,7 @@
 package com.fluxion.actions;
 
-import com.fluxion.utils.LocatorLoader;
+import com.fluxion.core.DriverManager;
+import com.fluxion.core.LocatorManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -9,7 +10,6 @@ import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 
 /**
  * SeleniumActions provides reusable methods for common Selenium operations.
@@ -19,15 +19,6 @@ public class SeleniumActions {
     private static final Logger logger = LoggerFactory.getLogger(SeleniumActions.class);
     private static final ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();
     private static final ThreadLocal<Actions> threadActions = ThreadLocal.withInitial(() -> new Actions(threadDriver.get()));
-
-    /**
-     * Constructor to initialize SeleniumActions with the WebDriver instance.
-     *
-     * @param driver WebDriver instance.
-     */
-    public SeleniumActions(WebDriver driver) {
-        threadDriver.set(driver);
-    }
 
     /**
      * Navigate to a specified URL.
@@ -50,18 +41,23 @@ public class SeleniumActions {
      * @param locatorName Name of the locator in the YAML file.
      * @return The located WebElement.
      */
-    private WebElement findElement(String locatorName) {
+    private By getLocator(String locatorName) {
+        logger.debug("Trying to file Element with locator: {}", locatorName);
         try {
-            String locatorData = LocatorLoader.getLocator("",locatorName);
+            String locatorData = LocatorManager.getNestedLocator("loginpage", locatorName);
             String locatorType = locatorData.split("__")[0];
             String locatorValue = locatorData.split("__")[1];
 
+            logger.debug("Locator type: '{}' and Locator Value: '{}'", locatorType, locatorValue);
+
             return switch (locatorType.toLowerCase()) {
-                case "id" -> getDriver().findElement(By.id(locatorValue));
-                case "xpath" -> getDriver().findElement(By.xpath(locatorValue));
-                case "css" -> getDriver().findElement(By.cssSelector(locatorValue));
-                case "name" -> getDriver().findElement(By.name(locatorValue));
-                case "linktext" -> getDriver().findElement(By.linkText(locatorValue));
+                case "id" -> By.id(locatorValue);
+                case "xpath" -> By.xpath(locatorValue);
+                case "css" -> By.cssSelector(locatorValue);
+                case "name" -> By.name(locatorValue);
+                case "linktext" -> By.linkText(locatorValue);
+                case "partiallinktext" -> By.partialLinkText(locatorValue);
+                case "tagname" -> By.tagName(locatorValue);
                 default -> throw new RuntimeException("Unsupported locator type: " + locatorType);
             };
         } catch (Exception e) {
@@ -78,7 +74,8 @@ public class SeleniumActions {
     public void enterText(String locatorName, String text) {
         try {
             logger.info("Entering text: '{}' in field: {}", text, locatorName);
-            WebElement element = findElement(locatorName);
+//            WebElement element = threadDriver.get().findElement(getLocator(locatorName));
+            WebElement element = DriverManager.getDriver().findElement(getLocator(locatorName));
             element.clear();
             element.sendKeys(text);
         } catch (Exception e) {
@@ -95,7 +92,7 @@ public class SeleniumActions {
     public void click(String locatorName) {
         try {
             logger.info("Clicking on field: {}", locatorName);
-            WebElement element = findElement(locatorName);
+            WebElement element = DriverManager.getDriver().findElement(getLocator(locatorName));
             element.click();
         } catch (Exception e) {
             logger.error("Failed to click on field: {}", locatorName, e);
@@ -112,7 +109,7 @@ public class SeleniumActions {
     public void selectFromDropdown(String fieldName, String value) {
         try {
             logger.info("Selecting value: '{}' from dropdown: {}", value, fieldName);
-            WebElement dropdown = findElement(fieldName);
+            WebElement dropdown = getDriver().findElement(getLocator(fieldName));
             Select select = new Select(dropdown);
             select.selectByVisibleText(value);
         } catch (Exception e) {

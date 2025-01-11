@@ -1,5 +1,5 @@
 browser: chrome
-baseUrl: https://edu.itinstruct.com
+testPageUrl: https://edu.itinstruct.com
 timeout: 30
 
 screenshot:
