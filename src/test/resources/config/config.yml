@@ -1,0 +1,14 @@
+browser: chrome
+baseUrl: https://edu.itinstruct.com
+timeout: 30
+
+screenshot:
+  dir: target/screenshots
+
+htmlReport:
+  suiteName: Regression Suite
+  outputFilePath: target/reports/
+
+locatorDir:
+  appName1: src/test/resources/locators/mylocators.yml
+  appName2: src/test/resources/locators/mylocators2.yml
