@@ -9,6 +9,6 @@ Feature: demo login test
     And  I enter "admin" in "Password"
     And  I click on "Login"
     Then I am on the "Home Page"
-    And  I should see ""
+    And  I should see "Input Form"
     When I enter "Saddam Hossain" in "Full Name"
     And  I close the browser

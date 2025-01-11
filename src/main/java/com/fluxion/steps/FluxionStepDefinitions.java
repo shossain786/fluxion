@@ -2,6 +2,7 @@ package com.fluxion.steps;
 
 import com.fluxion.actions.SeleniumActions;
 import com.fluxion.core.ConfigManager;
+import com.fluxion.core.DataManager;
 import com.fluxion.core.DriverManager;
 import com.fluxion.utils.ScreenshotUtil;
 import io.cucumber.java.Before;
@@ -26,15 +27,6 @@ public class FluxionStepDefinitions {
     private static final ThreadLocal<Scenario> threadLocalScenario = new ThreadLocal<>();
     private static final ThreadLocal<String> currentPageName = ThreadLocal.withInitial(() -> null);
     SeleniumActions seleniumActions = new SeleniumActions();
-    /**
-     * Retrieves the WebDriver instance for the current thread.
-     *
-     * @return The WebDriver instance.
-     */
-    private WebDriver getDriver() {
-        return threadLocalDriver.get();
-    }
-
     /**
      * Retrieves the Scenario instance for the current thread.
      *
@@ -65,6 +57,7 @@ public class FluxionStepDefinitions {
     @Given("I am on the {string}")
     public void iAmOnThePage(String pageName) {
         currentPageName.set(pageName.replace(" ", "").toLowerCase());
+        DataManager.put("currentPage", pageName.replace(" ", "").toLowerCase());
         logger.debug("I am on the: {}", pageName);
     }
 
@@ -73,11 +66,11 @@ public class FluxionStepDefinitions {
         try {
             String url = ConfigManager.getConfig(urlKey);
             assert  url != null;
-            getDriver().get(url);
-            String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), urlKey);
+            DriverManager.getDriver().get(url);
+            String screenshotPath = ScreenshotUtil.captureScreenshot(DriverManager.getDriver(), urlKey);
             getScenario().log("Application page opened. Screenshot: " + screenshotPath);
         } catch (Exception e) {
-            String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), "OpenLoginPage_Error");
+            String screenshotPath = ScreenshotUtil.captureScreenshot(DriverManager.getDriver(), "OpenLoginPage_Error");
             getScenario().log("Error in opening application page. Screenshot: " + screenshotPath);
             throw new RuntimeException("Error in opening login page", e);
         }
@@ -99,7 +92,7 @@ public class FluxionStepDefinitions {
             seleniumActions.click(fieldName);
             logger.debug("Clicked on: {} on page: {}", fieldName, pageName);
         } catch (Exception e) {
-            String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), "ClickError_" + fieldName);
+            String screenshotPath = ScreenshotUtil.captureScreenshot(DriverManager.getDriver(), "ClickError_" + fieldName);
             logger.error("Error clicking on: {} on page: {}. Screenshot: {}", fieldName, pageName, screenshotPath);
             throw new RuntimeException("Failed to click on field: " + fieldName + " on page: " + pageName, e);
         }
@@ -117,7 +110,7 @@ public class FluxionStepDefinitions {
             seleniumActions.enterText(fieldName, data);
             logger.debug("Entered '{}' in field: '{}'", data, fieldName);
         } catch (Exception e) {
-            String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), "EnterDataError_" + fieldName);
+            String screenshotPath = ScreenshotUtil.captureScreenshot(DriverManager.getDriver(), "EnterDataError_" + fieldName);
             logger.error("Error entering data in field: {}. Screenshot: {}", fieldName, screenshotPath);
             throw new RuntimeException("Failed to enter data in field: " + fieldName, e);
         }
@@ -131,28 +124,17 @@ public class FluxionStepDefinitions {
     @Then("I should see {string}")
     public void iShouldSee(String expectedText) {
         try {
-            boolean textVisible = getDriver().getPageSource().contains(expectedText);
+            boolean textVisible = DriverManager.getDriver().getPageSource().contains(expectedText);
             if (!textVisible) {
                 throw new AssertionError("Expected text not found: " + expectedText);
             }
 
             getScenario().log("Verified the presence of text: " + expectedText);
         } catch (Exception e) {
-            String screenshotPath = ScreenshotUtil.captureScreenshot(getDriver(), "TextVerificationError");
+            String screenshotPath = ScreenshotUtil.captureScreenshot(DriverManager.getDriver(), "TextVerificationError");
             getScenario().log("Error verifying text: " + expectedText + ". Screenshot: " + screenshotPath);
             throw new RuntimeException("Failed to verify text: " + expectedText, e);
         }
-    }
-
-    /**
-     * Step to navigate to a new page during the test execution.
-     *
-     * @param newPageName The name of the new page to navigate to.
-     */
-    @Then("I navigate to the {string}")
-    public void iNavigateTo(String newPageName) {
-        currentPageName.set(newPageName);
-        logger.debug("Navigated to page: {}", newPageName);
     }
 
     /**

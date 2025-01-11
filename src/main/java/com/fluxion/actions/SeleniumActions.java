@@ -1,5 +1,6 @@
 package com.fluxion.actions;
 
+import com.fluxion.core.DataManager;
 import com.fluxion.core.DriverManager;
 import com.fluxion.core.LocatorManager;
 import org.openqa.selenium.By;
@@ -21,21 +22,6 @@ public class SeleniumActions {
     private static final ThreadLocal<Actions> threadActions = ThreadLocal.withInitial(() -> new Actions(threadDriver.get()));
 
     /**
-     * Navigate to a specified URL.
-     *
-     * @param url the URL to navigate to
-     */
-    public void navigateTo(String url) {
-        try {
-            logger.info("Navigating to URL: {}", url);
-            getDriver().get(url);
-        } catch (Exception e) {
-            logger.error("Failed to navigate to URL: {}", url, e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Finds a web element using the specified locator name.
      *
      * @param locatorName Name of the locator in the YAML file.
@@ -44,7 +30,7 @@ public class SeleniumActions {
     private By getLocator(String locatorName) {
         logger.debug("Trying to file Element with locator: {}", locatorName);
         try {
-            String locatorData = LocatorManager.getNestedLocator("loginpage", locatorName);
+            String locatorData = LocatorManager.getNestedLocator(DataManager.get("currentPage").toString(), locatorName);
             String locatorType = locatorData.split("__")[0];
             String locatorValue = locatorData.split("__")[1];
 
@@ -101,6 +87,24 @@ public class SeleniumActions {
     }
 
     /**
+     * Select a field is displayed or not.
+     *
+     * @param fieldName the dropdown field name
+     * @param expectedValue the value to select
+     */
+    public void verifyIfFieldDisplayed(String fieldName, String expectedValue) {
+        try {
+            logger.info("Verifying if the field: {} is: {}", fieldName, expectedValue);
+            WebElement element = DriverManager.getDriver().findElement(getLocator(fieldName));
+            boolean displayed = element.isDisplayed();
+
+        } catch (Exception e) {
+            logger.error("Failed to select value: '{}' from dropdown: {}", expectedValue, fieldName, e);
+            throw new RuntimeException("Error selecting value from dropdown", e);
+        }
+    }
+
+    /**
      * Select a value from a dropdown.
      *
      * @param fieldName the dropdown field name
@@ -109,26 +113,13 @@ public class SeleniumActions {
     public void selectFromDropdown(String fieldName, String value) {
         try {
             logger.info("Selecting value: '{}' from dropdown: {}", value, fieldName);
-            WebElement dropdown = getDriver().findElement(getLocator(fieldName));
+            WebElement dropdown = DriverManager.getDriver().findElement(getLocator(fieldName));
             Select select = new Select(dropdown);
             select.selectByVisibleText(value);
         } catch (Exception e) {
             logger.error("Failed to select value: '{}' from dropdown: {}", value, fieldName, e);
             throw new RuntimeException("Error selecting value from dropdown", e);
         }
-    }
-
-    /**
-     * Get the thread-safe WebDriver instance.
-     *
-     * @return WebDriver instance.
-     */
-    private WebDriver getDriver() {
-        WebDriver driver = threadDriver.get();
-        if (driver == null) {
-            throw new IllegalStateException("WebDriver is not initialized for the current thread.");
-        }
-        return driver;
     }
 
     /**
