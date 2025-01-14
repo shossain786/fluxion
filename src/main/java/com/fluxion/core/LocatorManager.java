@@ -52,7 +52,7 @@ public class LocatorManager {
         logger.debug("Locator to find from YML file for Page: {} and Object: {}", parentKey, childKey);
         Object parent = locators.get(parentKey);
         if (parent instanceof Map) {
-            Object childValue = ((Map<?, ?>) parent).get(childKey.replace(" ", "").toLowerCase());
+            Object childValue = ((Map<?, ?>) parent).get(childKey.replace(" ", ""));
             return childValue != null ? childValue.toString() : null;
         }
         return null;

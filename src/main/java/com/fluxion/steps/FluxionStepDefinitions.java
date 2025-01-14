@@ -3,7 +3,9 @@ package com.fluxion.steps;
 import com.fluxion.actions.SeleniumActions;
 import com.fluxion.core.ConfigManager;
 import com.fluxion.core.DriverManager;
+import com.fluxion.utils.FluxionConstants;
 import com.fluxion.utils.ScreenshotUtil;
+import com.fluxion.utils.ThreadSafeMemory;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
@@ -62,9 +64,11 @@ public class FluxionStepDefinitions {
      *
      * @param pageName The name of the page to navigate to.
      */
-    @Given("I am on the {string}")
+    @Given("I am on the {string} screen")
     public void iAmOnThePage(String pageName) {
-        currentPageName.set(pageName.replace(" ", "").toLowerCase());
+        pageName = pageName.replace(" ", "");
+        currentPageName.set(pageName);
+        ThreadSafeMemory.put(FluxionConstants.CURRENT_PAGE_NAME, pageName);
         logger.debug("I am on the: {}", pageName);
     }
 
@@ -169,4 +173,20 @@ public class FluxionStepDefinitions {
         }
     }
 
+/**
+ * Selects a specified value from a dropdown field.
+ * <p>
+ * Logs the action and interacts with the UI to select the provided value
+ * from the dropdown identified by the field name.
+ * </p>
+ *
+ * @param data      The value to select from the dropdown.
+ * @param fieldName The name or identifier of the dropdown field.
+ */
+
+ @And("I select {string} from {string}")
+    public void iSelectFrom(String data, String fieldName) {
+        logger.debug("I select {} from {}", data, fieldName);
+        seleniumActions.selectFromDropdown(fieldName, data);
+    }
 }

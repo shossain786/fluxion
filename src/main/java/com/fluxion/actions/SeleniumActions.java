@@ -2,13 +2,15 @@ package com.fluxion.actions;
 
 import com.fluxion.core.DriverManager;
 import com.fluxion.core.LocatorManager;
+import com.fluxion.utils.FluxionConstants;
+import com.fluxion.utils.ThreadSafeMemory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -16,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * Ensures thread safety for WebDriver and Actions instances.
  */
 public class SeleniumActions {
-    private static final Logger logger = LoggerFactory.getLogger(SeleniumActions.class);
+    private static final Logger logger = LogManager.getLogger(SeleniumActions.class);
     private static final ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();
     private static final ThreadLocal<Actions> threadActions = ThreadLocal.withInitial(() -> new Actions(threadDriver.get()));
 
@@ -44,10 +46,10 @@ public class SeleniumActions {
     private By getLocator(String locatorName) {
         logger.debug("Trying to file Element with locator: {}", locatorName);
         try {
-            String locatorData = LocatorManager.getNestedLocator("loginpage", locatorName);
+            String locatorData = LocatorManager.getNestedLocator(
+                    ThreadSafeMemory.get(FluxionConstants.CURRENT_PAGE_NAME).toString(), locatorName);
             String locatorType = locatorData.split("__")[0];
             String locatorValue = locatorData.split("__")[1];
-
             logger.debug("Locator type: '{}' and Locator Value: '{}'", locatorType, locatorValue);
 
             return switch (locatorType.toLowerCase()) {
@@ -73,8 +75,7 @@ public class SeleniumActions {
      */
     public void enterText(String locatorName, String text) {
         try {
-            logger.info("Entering text: '{}' in field: {}", text, locatorName);
-//            WebElement element = threadDriver.get().findElement(getLocator(locatorName));
+            logger.debug("Entering text: '{}' in field: {}", text, locatorName);
             WebElement element = DriverManager.getDriver().findElement(getLocator(locatorName));
             element.clear();
             element.sendKeys(text);
@@ -91,7 +92,7 @@ public class SeleniumActions {
      */
     public void click(String locatorName) {
         try {
-            logger.info("Clicking on field: {}", locatorName);
+            logger.debug("Clicking on field: {}", locatorName);
             WebElement element = DriverManager.getDriver().findElement(getLocator(locatorName));
             element.click();
         } catch (Exception e) {
@@ -108,7 +109,7 @@ public class SeleniumActions {
      */
     public void selectFromDropdown(String fieldName, String value) {
         try {
-            logger.info("Selecting value: '{}' from dropdown: {}", value, fieldName);
+            logger.debug("Selecting value: '{}' from dropdown: {}", value, fieldName);
             WebElement dropdown = getDriver().findElement(getLocator(fieldName));
             Select select = new Select(dropdown);
             select.selectByVisibleText(value);
@@ -124,20 +125,11 @@ public class SeleniumActions {
      * @return WebDriver instance.
      */
     private WebDriver getDriver() {
-        WebDriver driver = threadDriver.get();
+        WebDriver driver = DriverManager.getDriver();
         if (driver == null) {
             throw new IllegalStateException("WebDriver is not initialized for the current thread.");
         }
         return driver;
-    }
-
-    /**
-     * Get the thread-safe Actions instance.
-     *
-     * @return Actions instance.
-     */
-    private Actions getActions() {
-        return threadActions.get();
     }
 
     /**
