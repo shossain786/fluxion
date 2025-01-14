@@ -66,7 +66,7 @@ public class FluxionStepDefinitions {
      */
     @Given("I am on the {string} screen")
     public void iAmOnThePage(String pageName) {
-        pageName = pageName.replace(" ", "").toLowerCase();
+        pageName = pageName.replace(" ", "");
         currentPageName.set(pageName);
         ThreadSafeMemory.put(FluxionConstants.CURRENT_PAGE_NAME, pageName);
         logger.debug("I am on the: {}", pageName);
@@ -173,4 +173,20 @@ public class FluxionStepDefinitions {
         }
     }
 
+/**
+ * Selects a specified value from a dropdown field.
+ * <p>
+ * Logs the action and interacts with the UI to select the provided value
+ * from the dropdown identified by the field name.
+ * </p>
+ *
+ * @param data      The value to select from the dropdown.
+ * @param fieldName The name or identifier of the dropdown field.
+ */
+
+ @And("I select {string} from {string}")
+    public void iSelectFrom(String data, String fieldName) {
+        logger.debug("I select {} from {}", data, fieldName);
+        seleniumActions.selectFromDropdown(fieldName, data);
+    }
 }

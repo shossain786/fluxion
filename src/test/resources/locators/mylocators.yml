@@ -1,7 +1,8 @@
-loginpage:
-  username: "css__#username"
-  password: "css__#password"
-  login: "css__#submit"
-homepage:
-  inputform: "xpath__//b[.='Input Form']"
-  fullname: "css__[id=uname]"
+LoginPage:
+  UserName: "css__#username"
+  Password: "css__#password"
+  Login: "css__#submit"
+HomePage:
+  InputForm: "xpath__//b[.='Input Form']"
+  FullName: "css__[id=uname]"
+  Carrier: "id__engineer"
