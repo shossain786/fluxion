@@ -3,7 +3,9 @@ package com.fluxion.steps;
 import com.fluxion.actions.SeleniumActions;
 import com.fluxion.core.ConfigManager;
 import com.fluxion.core.DriverManager;
+import com.fluxion.utils.FluxionConstants;
 import com.fluxion.utils.ScreenshotUtil;
+import com.fluxion.utils.ThreadSafeMemory;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.And;
@@ -62,9 +64,11 @@ public class FluxionStepDefinitions {
      *
      * @param pageName The name of the page to navigate to.
      */
-    @Given("I am on the {string}")
+    @Given("I am on the {string} screen")
     public void iAmOnThePage(String pageName) {
-        currentPageName.set(pageName.replace(" ", "").toLowerCase());
+        pageName = pageName.replace(" ", "").toLowerCase();
+        currentPageName.set(pageName);
+        ThreadSafeMemory.put(FluxionConstants.CURRENT_PAGE_NAME, pageName);
         logger.debug("I am on the: {}", pageName);
     }
 

@@ -2,6 +2,8 @@ package com.fluxion.actions;
 
 import com.fluxion.core.DriverManager;
 import com.fluxion.core.LocatorManager;
+import com.fluxion.utils.FluxionConstants;
+import com.fluxion.utils.ThreadSafeMemory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -44,7 +46,7 @@ public class SeleniumActions {
     private By getLocator(String locatorName) {
         logger.debug("Trying to file Element with locator: {}", locatorName);
         try {
-            String locatorData = LocatorManager.getNestedLocator("loginpage", locatorName);
+            String locatorData = LocatorManager.getNestedLocator(ThreadSafeMemory.get(FluxionConstants.CURRENT_PAGE_NAME).toString(), locatorName);
             String locatorType = locatorData.split("__")[0];
             String locatorValue = locatorData.split("__")[1];
 
@@ -73,8 +75,7 @@ public class SeleniumActions {
      */
     public void enterText(String locatorName, String text) {
         try {
-            logger.info("Entering text: '{}' in field: {}", text, locatorName);
-//            WebElement element = threadDriver.get().findElement(getLocator(locatorName));
+            logger.debug("Entering text: '{}' in field: {}", text, locatorName);
             WebElement element = DriverManager.getDriver().findElement(getLocator(locatorName));
             element.clear();
             element.sendKeys(text);
@@ -91,7 +92,7 @@ public class SeleniumActions {
      */
     public void click(String locatorName) {
         try {
-            logger.info("Clicking on field: {}", locatorName);
+            logger.debug("Clicking on field: {}", locatorName);
             WebElement element = DriverManager.getDriver().findElement(getLocator(locatorName));
             element.click();
         } catch (Exception e) {
