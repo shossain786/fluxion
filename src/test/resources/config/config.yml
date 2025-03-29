@@ -1,4 +1,4 @@
-browser: chrome
+browser: firefox
 testPageUrl: https://edu.itinstruct.com
 timeout: 30
 

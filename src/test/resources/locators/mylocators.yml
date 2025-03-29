@@ -1,8 +1,8 @@
 LoginPage:
-  UserName: "css__#username"
-  Password: "css__#password"
-  Login: "css__#submit"
+  UserName: css__#username
+  Password: css__#password
+  Login: xpath__//button[.='Login']
 HomePage:
-  InputForm: "xpath__//b[.='Input Form']"
-  FullName: "css__[id=uname]"
-  Carrier: "id__engineer"
+  InputForm: xpath__//b[.='Input Form']
+  FullName: xpath__//input[@id='projectName']
+  Carrier: id__automationType

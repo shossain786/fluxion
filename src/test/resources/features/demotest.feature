@@ -15,5 +15,5 @@ Feature: demo login test
 
   Scenario: Test Career dropdown
     When I am on the "Home Page" screen
-    And I select "Automation Tester" from "Carrier"
+    And I select "Automation Testing" from "Carrier"
     And I close the browser
